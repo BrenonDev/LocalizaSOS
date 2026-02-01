@@ -96,7 +96,7 @@ if(isIOS){
   url = `comgooglemaps://?q=${lat},${lon}&zoom=17&mapmode=satellite`;
 }
 else if(isAndroid){
-  url = `intent://maps.google.com/maps?q=${lat},${lon}&z=17&t=k#Intent;scheme=https;package=com.google.android.apps.maps;end`;
+  url = `intent://maps.google.com/maps?ll=${lat},${lon}&q=${lat},${lon}&z=17&t=k#Intent;scheme=https;package=com.google.android.apps.maps;end`;
 }
 else{
   url = `https://www.google.com/maps?q=${lat},${lon}&z=17&t=k`;
