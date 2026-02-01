@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<title>Redirecionando para a localização</title>
+<title>LocalizaSOS</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
@@ -10,33 +10,42 @@
   box-sizing:border-box;
   font-family:Arial,Helvetica,sans-serif;
 }
-body{
+
+html, body{
   margin:0;
-  min-height:100dvh;
+  padding:0;
+  height:100%;
+  background:#000;
+}
+
+#loader{
+  position:fixed;
+  inset:0;
   background:#000;
   display:flex;
   justify-content:center;
   align-items:center;
+  flex-direction:column;
   color:white;
-}
-
-.container{
-  text-align:center;
+  z-index:10;
 }
 
 .icon-wrapper{
   position:relative;
-  width:100px;
-  height:100px;
-  margin:0 auto 20px;
+  width:120px;
+  height:120px;
+  margin-bottom:20px;
 }
 
 .risk-ring{
   position:absolute;
   inset:0;
-  border:3px dashed #fff;
   border-radius:50%;
-  animation:spin 1.5s linear infinite;
+  border:5px solid transparent;
+  border-top:5px solid #fff;
+  border-right:5px solid #fff;
+  border-bottom:5px solid #fff;
+  animation:spin 1.3s linear infinite;
 }
 
 .location-icon{
@@ -46,23 +55,34 @@ body{
   justify-content:center;
   align-items:center;
   color:#e53935;
-  font-size:60px;
 }
 
 @keyframes spin{
   to{transform:rotate(360deg);}
 }
 
+#map-container{
+  width:100%;
+  height:100%;
+  display:none;
+}
+
+iframe{
+  width:100%;
+  height:100%;
+  border:0;
+}
+
 p{
   color:#ccc;
-  font-size:1rem;
+  text-align:center;
 }
 </style>
 </head>
 
 <body>
 
-<div class="container">
+<div id="loader">
   <div class="icon-wrapper">
     <div class="risk-ring"></div>
     <div class="location-icon">
@@ -72,9 +92,10 @@ p{
       </svg>
     </div>
   </div>
-
-  <p><b>Localização recebida</b><br>Redirecionando para o mapa…</p>
+  <p><b>Localização recebida</b><br>Carregando o mapa…</p>
 </div>
+
+<div id="map-container"></div>
 
 <script>
 const params = new URLSearchParams(window.location.search);
@@ -86,24 +107,13 @@ if(!lat || !lon){
   throw new Error("Latitude ou longitude ausente.");
 }
 
-const ua = navigator.userAgent;
-const isIOS = /iPhone|iPad|iPod/i.test(ua);
-const isAndroid = /Android/i.test(ua);
-
-let url = "";
-
-if(isIOS){
-  url = `comgooglemaps://?q=${lat},${lon}&zoom=17&mapmode=satellite`;
-}
-else if(isAndroid){
-  url = `intent://maps.google.com/maps?ll=${lat},${lon}&q=${lat},${lon}&z=17&t=k#Intent;scheme=https;package=com.google.android.apps.maps;end`;
-}
-else{
-  url = `https://www.google.com/maps?q=${lat},${lon}&z=17&t=k`;
-}
+const mapUrl = `https://www.google.com/maps?q=${lat},${lon}&z=17&t=k&output=embed`;
 
 setTimeout(()=>{
-  window.location.href = url;
+  document.getElementById("map-container").innerHTML =
+    `<iframe src="${mapUrl}" allowfullscreen loading="lazy"></iframe>`;
+  document.getElementById("loader").style.display = "none";
+  document.getElementById("map-container").style.display = "block";
 },2000);
 </script>
 
