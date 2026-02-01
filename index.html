@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Redirecionando para a localização</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+*{
+  box-sizing:border-box;
+  font-family:Arial,Helvetica,sans-serif;
+}
+body{
+  margin:0;
+  min-height:100dvh;
+  background:#000;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  color:white;
+}
+
+.container{
+  text-align:center;
+}
+
+.icon-wrapper{
+  position:relative;
+  width:100px;
+  height:100px;
+  margin:0 auto 20px;
+}
+
+.risk-ring{
+  position:absolute;
+  inset:0;
+  border:3px dashed #fff;
+  border-radius:50%;
+  animation:spin 1.5s linear infinite;
+}
+
+.location-icon{
+  position:absolute;
+  inset:0;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  color:#e53935;
+  font-size:60px;
+}
+
+@keyframes spin{
+  to{transform:rotate(360deg);}
+}
+
+p{
+  color:#ccc;
+  font-size:1rem;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+  <div class="icon-wrapper">
+    <div class="risk-ring"></div>
+    <div class="location-icon">
+      <svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" fill="currentColor" viewBox="0 0 16 16">
+        <path d="M12.166 8.94c-.524 1.062-1.234 2.12-1.96 3.07A32 32 0 0 1 8 14.58a32 32 0 0 1-2.206-2.57c-.726-.95-1.436-2.008-1.96-3.07C3.304 7.867 3 6.862 3 6a5 5 0 0 1 10 0c0 .862-.305 1.867-.834 2.94M8 16s6-5.686 6-10A6 6 0 0 0 2 6c0 4.314 6 10 6 10"/>
+        <path d="M8 8a2 2 0 1 1 0-4 2 2 0 0 1 0 4m0 1a3 3 0 1 0 0-6 3 3 0 0 0 0 6"/>
+      </svg>
+    </div>
+  </div>
+
+  <p><b>Localização recebida</b><br>Redirecionando para o mapa…</p>
+</div>
+
+<script>
+const params = new URLSearchParams(window.location.search);
+const lat = params.get("lat");
+const lon = params.get("lon");
+
+if(!lat || !lon){
+  document.querySelector("p").innerHTML = "Localização inválida.";
+  throw new Error("Latitude ou longitude ausente.");
+}
+
+const ua = navigator.userAgent;
+const isIOS = /iPhone|iPad|iPod/i.test(ua);
+const isAndroid = /Android/i.test(ua);
+
+let url = "";
+
+if(isIOS){
+  url = `comgooglemaps://?q=${lat},${lon}&zoom=17&mapmode=satellite`;
+}
+else if(isAndroid){
+  url = `intent://maps.google.com/maps?q=${lat},${lon}&z=17&t=k#Intent;scheme=https;package=com.google.android.apps.maps;end`;
+}
+else{
+  url = `https://www.google.com/maps?q=${lat},${lon}&z=17&t=k`;
+}
+
+setTimeout(()=>{
+  window.location.href = url;
+},2000);
+</script>
+
+</body>
+</html>
